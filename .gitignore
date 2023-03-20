@@ -1,3 +1,4 @@
 # no obj path should be included
+.vc
 GetLocked/obj
 GetLocked/bin
