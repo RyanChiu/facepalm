@@ -1,2 +1,3 @@
 # no obj path should be included
-/obj
+GetLocked/obj
+GetLocked/bin
