@@ -1,0 +1,11 @@
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\bin\Release\HelloWorld.exe.config
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\bin\Release\HelloWorld.exe
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\bin\Release\HelloWorld.pdb
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.csproj.AssemblyReference.cache
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.csproj.SuggestedBindingRedirects.cache
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.FormAMB.resources
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.Properties.Resources.resources
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.csproj.GenerateResource.cache
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.csproj.CoreCompileInputs.cache
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.exe
+C:\Users\ryanc\source\repos\WinFormsApp1\HelloWorld\obj\Release\HelloWorld.pdb
