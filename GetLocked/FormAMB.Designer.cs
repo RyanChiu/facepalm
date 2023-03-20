@@ -28,11 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.BtnClickMe = new System.Windows.Forms.Button();
-            this.labelShowing = new System.Windows.Forms.Label();
             this.textBoxShowing = new System.Windows.Forms.TextBox();
+            this.BtnClickMe = new System.Windows.Forms.Button();
             this.listBoxShowing = new System.Windows.Forms.ListBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // textBoxShowing
+            // 
+            this.textBoxShowing.Location = new System.Drawing.Point(3, 3);
+            this.textBoxShowing.Multiline = true;
+            this.textBoxShowing.Name = "textBoxShowing";
+            this.textBoxShowing.ReadOnly = true;
+            this.textBoxShowing.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxShowing.Size = new System.Drawing.Size(254, 391);
+            this.textBoxShowing.TabIndex = 2;
+            this.textBoxShowing.WordWrap = false;
             // 
             // BtnClickMe
             // 
@@ -44,57 +59,53 @@
             this.BtnClickMe.UseVisualStyleBackColor = true;
             this.BtnClickMe.Click += new System.EventHandler(this.BtnClickMe_Click);
             // 
-            // labelShowing
-            // 
-            this.labelShowing.AutoSize = true;
-            this.labelShowing.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.labelShowing.ForeColor = System.Drawing.Color.Salmon;
-            this.labelShowing.Location = new System.Drawing.Point(408, 545);
-            this.labelShowing.Name = "labelShowing";
-            this.labelShowing.Size = new System.Drawing.Size(103, 16);
-            this.labelShowing.TabIndex = 1;
-            this.labelShowing.Text = "Show me sth.";
-            // 
-            // textBoxShowing
-            // 
-            this.textBoxShowing.Location = new System.Drawing.Point(12, 12);
-            this.textBoxShowing.Multiline = true;
-            this.textBoxShowing.Name = "textBoxShowing";
-            this.textBoxShowing.ReadOnly = true;
-            this.textBoxShowing.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxShowing.Size = new System.Drawing.Size(902, 209);
-            this.textBoxShowing.TabIndex = 2;
-            this.textBoxShowing.WordWrap = false;
-            // 
             // listBoxShowing
             // 
             this.listBoxShowing.FormattingEnabled = true;
             this.listBoxShowing.ItemHeight = 12;
-            this.listBoxShowing.Location = new System.Drawing.Point(12, 227);
+            this.listBoxShowing.Location = new System.Drawing.Point(3, 6);
             this.listBoxShowing.MultiColumn = true;
             this.listBoxShowing.Name = "listBoxShowing";
-            this.listBoxShowing.Size = new System.Drawing.Size(902, 256);
+            this.listBoxShowing.Size = new System.Drawing.Size(632, 388);
             this.listBoxShowing.TabIndex = 3;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Location = new System.Drawing.Point(12, 12);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.listBoxShowing);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxShowing);
+            this.splitContainer1.Size = new System.Drawing.Size(902, 469);
+            this.splitContainer1.SplitterDistance = 638;
+            this.splitContainer1.TabIndex = 4;
             // 
             // FormAMB
             // 
             this.ClientSize = new System.Drawing.Size(926, 579);
-            this.Controls.Add(this.listBoxShowing);
-            this.Controls.Add(this.textBoxShowing);
-            this.Controls.Add(this.labelShowing);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.BtnClickMe);
             this.Name = "FormAMB";
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button BtnClickMe;
-        private System.Windows.Forms.Label labelShowing;
         private System.Windows.Forms.TextBox textBoxShowing;
+        private System.Windows.Forms.Button BtnClickMe;
         private System.Windows.Forms.ListBox listBoxShowing;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 
