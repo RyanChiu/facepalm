@@ -31,7 +31,11 @@
             this.textBoxShowing = new System.Windows.Forms.TextBox();
             this.BtnClickMe = new System.Windows.Forms.Button();
             this.listBoxShowing = new System.Windows.Forms.ListBox();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -40,20 +44,22 @@
             // 
             // textBoxShowing
             // 
-            this.textBoxShowing.Location = new System.Drawing.Point(3, 3);
+            this.textBoxShowing.Location = new System.Drawing.Point(3, 4);
             this.textBoxShowing.Multiline = true;
             this.textBoxShowing.Name = "textBoxShowing";
             this.textBoxShowing.ReadOnly = true;
             this.textBoxShowing.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxShowing.Size = new System.Drawing.Size(254, 391);
+            this.textBoxShowing.Size = new System.Drawing.Size(185, 338);
             this.textBoxShowing.TabIndex = 2;
             this.textBoxShowing.WordWrap = false;
             // 
             // BtnClickMe
             // 
-            this.BtnClickMe.Location = new System.Drawing.Point(231, 509);
+            this.BtnClickMe.AutoSize = true;
+            this.BtnClickMe.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BtnClickMe.Location = new System.Drawing.Point(0, 0);
             this.BtnClickMe.Name = "BtnClickMe";
-            this.BtnClickMe.Size = new System.Drawing.Size(463, 23);
+            this.BtnClickMe.Size = new System.Drawing.Size(548, 25);
             this.BtnClickMe.TabIndex = 0;
             this.BtnClickMe.Text = "ClickMe";
             this.BtnClickMe.UseVisualStyleBackColor = true;
@@ -63,34 +69,54 @@
             // 
             this.listBoxShowing.FormattingEnabled = true;
             this.listBoxShowing.ItemHeight = 12;
-            this.listBoxShowing.Location = new System.Drawing.Point(3, 6);
+            this.listBoxShowing.Location = new System.Drawing.Point(12, 4);
             this.listBoxShowing.MultiColumn = true;
             this.listBoxShowing.Name = "listBoxShowing";
-            this.listBoxShowing.Size = new System.Drawing.Size(632, 388);
+            this.listBoxShowing.Size = new System.Drawing.Size(330, 340);
             this.listBoxShowing.TabIndex = 3;
+            // 
+            // splitContainer
+            // 
+            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer.Name = "splitContainer";
+            // 
+            // splitContainer.Panel2
+            // 
+            this.splitContainer.Panel2.Controls.Add(this.textBoxShowing);
+            this.splitContainer.Size = new System.Drawing.Size(548, 347);
+            this.splitContainer.SplitterDistance = 345;
+            this.splitContainer.SplitterWidth = 3;
+            this.splitContainer.TabIndex = 4;
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Location = new System.Drawing.Point(12, 12);
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.listBoxShowing);
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.textBoxShowing);
-            this.splitContainer1.Size = new System.Drawing.Size(902, 469);
-            this.splitContainer1.SplitterDistance = 638;
-            this.splitContainer1.TabIndex = 4;
+            this.splitContainer1.Panel2.Controls.Add(this.BtnClickMe);
+            this.splitContainer1.Size = new System.Drawing.Size(548, 376);
+            this.splitContainer1.SplitterDistance = 347;
+            this.splitContainer1.TabIndex = 5;
             // 
             // FormAMB
             // 
-            this.ClientSize = new System.Drawing.Size(926, 579);
+            this.ClientSize = new System.Drawing.Size(548, 376);
             this.Controls.Add(this.splitContainer1);
-            this.Controls.Add(this.BtnClickMe);
             this.Name = "FormAMB";
+            this.splitContainer.Panel2.ResumeLayout(false);
+            this.splitContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+            this.splitContainer.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
@@ -105,6 +131,7 @@
         private System.Windows.Forms.TextBox textBoxShowing;
         private System.Windows.Forms.Button BtnClickMe;
         private System.Windows.Forms.ListBox listBoxShowing;
+        private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
