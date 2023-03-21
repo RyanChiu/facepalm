@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAMB));
             this.textBoxShowing = new System.Windows.Forms.TextBox();
             this.BtnClickMe = new System.Windows.Forms.Button();
             this.listBoxShowing = new System.Windows.Forms.ListBox();
@@ -112,6 +113,7 @@
             // 
             this.ClientSize = new System.Drawing.Size(548, 376);
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormAMB";
             this.splitContainer.Panel2.ResumeLayout(false);
             this.splitContainer.Panel2.PerformLayout();
