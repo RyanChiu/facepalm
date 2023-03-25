@@ -36,7 +36,7 @@
     <StartupObject>GetLocked.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>facepalm00.ico</ApplicationIcon>
+    <ApplicationIcon>facepalm01.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="facepalm00.ico" />
+    <Content Include="facepalm01.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
