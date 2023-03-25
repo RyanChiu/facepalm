@@ -15,6 +15,7 @@ namespace GetLocked
         }
 
         private String mainWinTitle = "Signal";
+        private String mainFormTitle = "Facepalm";
         static private Gram g = new Gram();
         static System.Threading.Timer myTimer;
 
@@ -109,12 +110,17 @@ namespace GetLocked
             this.Show();
         }
 
+        public String getFormTitle()
+        {
+            return mainFormTitle;
+        }
+
         private void FormAMB_Load(object sender, EventArgs e)
         {
             myTimer = new System.Threading.Timer(G.Display, this, 2000, 1000);
             Console.WriteLine("Timer started.");
             Console.ReadLine();
-            this.Text = "Timer started";
+            this.mainFormTitle = "Timer started";
         }
     }
 
@@ -123,9 +129,9 @@ namespace GetLocked
         static private int TimesCalled = 0;
         public void Display(object obj)
         {
-            Form frm = (Form)obj;
-            Console.WriteLine("{0} {1} keep running.", frm.Text, ++TimesCalled);
-            frm.Text += TimesCalled.ToString();
+            FormAMB frm = (FormAMB)obj;
+            Console.WriteLine("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
+            frm.Text = String.Format("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
         }
     }
 }
