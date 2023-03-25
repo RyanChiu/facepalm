@@ -10,10 +10,15 @@ namespace GetLocked
         public FormAMB()
         {
             InitializeComponent();
+            Control.CheckForIllegalCrossThreadCalls = false;
             this.listBoxShowing.MouseDoubleClick += new MouseEventHandler(listBoxShowing_MouseDoubleClick);
         }
 
         private String mainWinTitle = "Signal";
+        static private Gram g = new Gram();
+        static System.Threading.Timer myTimer;
+
+        internal static Gram G { get => g; set => g = value; }
 
         public struct RECT
         {
@@ -102,6 +107,25 @@ namespace GetLocked
             this.Location = new System.Drawing.Point(rect.Left, rect.Top);
             this.Size = new System.Drawing.Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
             this.Show();
+        }
+
+        private void FormAMB_Load(object sender, EventArgs e)
+        {
+            myTimer = new System.Threading.Timer(G.Display, this, 2000, 1000);
+            Console.WriteLine("Timer started.");
+            Console.ReadLine();
+            this.Text = "Timer started";
+        }
+    }
+
+    class Gram
+    {
+        static private int TimesCalled = 0;
+        public void Display(object obj)
+        {
+            Form frm = (Form)obj;
+            Console.WriteLine("{0} {1} keep running.", frm.Text, ++TimesCalled);
+            frm.Text += TimesCalled.ToString();
         }
     }
 }
