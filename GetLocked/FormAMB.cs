@@ -36,6 +36,9 @@ namespace GetLocked
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
+        [DllImport("user32.dll", EntryPoint = "GetForegroundWindow")]
+        public static extern IntPtr GetForegroundWindow();
+
         private void BtnClickMe_Click(object sender, EventArgs e)
         {
             textBoxShowing.Text = string.Empty;
@@ -87,6 +90,21 @@ namespace GetLocked
             }
         }
 
+        public void checkIfFocused(String name)
+        {
+            Process[] myProcesses = Process.GetProcesses();
+            String title = "";
+            foreach (Process myProcess in myProcesses)
+            {
+                if (myProcess.MainWindowHandle == GetForegroundWindow())
+                {
+                    title = myProcess.MainWindowTitle;
+                    break;
+                }
+            }
+            Console.WriteLine("Got you, 'Name:{0}, ID:{1}' APP activated.", (title == "" ? "N/A" : title), GetForegroundWindow().ToString());
+        }
+
         void showMeOverU(IntPtr handle)
         {
             RECT rect = new RECT
@@ -118,9 +136,12 @@ namespace GetLocked
         private void FormAMB_Load(object sender, EventArgs e)
         {
             myTimer = new System.Threading.Timer(G.Display, this, 2000, 1000);
-            Console.WriteLine("Timer started.");
-            Console.ReadLine();
             this.mainFormTitle = "Timer started";
+        }
+
+        private void FormAMB_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            myTimer.Dispose();
         }
     }
 
@@ -130,8 +151,8 @@ namespace GetLocked
         public void Display(object obj)
         {
             FormAMB frm = (FormAMB)obj;
-            Console.WriteLine("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
             frm.Text = String.Format("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
+            frm.checkIfFocused("Signal");
         }
     }
 }
