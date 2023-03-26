@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAMB));
             this.textBoxShowing = new System.Windows.Forms.TextBox();
             this.BtnClickMe = new System.Windows.Forms.Button();
             this.listBoxShowing = new System.Windows.Forms.ListBox();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -70,10 +72,10 @@
             // 
             this.listBoxShowing.FormattingEnabled = true;
             this.listBoxShowing.ItemHeight = 12;
-            this.listBoxShowing.Location = new System.Drawing.Point(12, 4);
+            this.listBoxShowing.Location = new System.Drawing.Point(10, 3);
             this.listBoxShowing.MultiColumn = true;
             this.listBoxShowing.Name = "listBoxShowing";
-            this.listBoxShowing.Size = new System.Drawing.Size(330, 340);
+            this.listBoxShowing.Size = new System.Drawing.Size(332, 340);
             this.listBoxShowing.TabIndex = 3;
             // 
             // splitContainer
@@ -109,15 +111,29 @@
             this.splitContainer1.SplitterDistance = 347;
             this.splitContainer1.TabIndex = 5;
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "Facepalm";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+            // 
             // FormAMB
             // 
             this.ClientSize = new System.Drawing.Size(548, 376);
             this.Controls.Add(this.splitContainer1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormAMB";
             this.Text = "Facepalm";
+            this.Deactivate += new System.EventHandler(this.FormAMB_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormAMB_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormAMB_FormClosed);
             this.Load += new System.EventHandler(this.FormAMB_Load);
+            this.Shown += new System.EventHandler(this.FormAMB_Shown);
+            this.Resize += new System.EventHandler(this.FormAMB_Resize);
             this.splitContainer.Panel2.ResumeLayout(false);
             this.splitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
@@ -138,6 +154,7 @@
         private System.Windows.Forms.ListBox listBoxShowing;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

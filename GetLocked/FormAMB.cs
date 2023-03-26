@@ -16,8 +16,9 @@ namespace GetLocked
 
         private String mainWinTitle = "Signal";
         private String mainFormTitle = "Facepalm";
+        private Boolean is1st = true;
         static private Gram g = new Gram();
-        static System.Threading.Timer myTimer;
+        static private System.Threading.Timer myTimer;
 
         internal static Gram G { get => g; set => g = value; }
 
@@ -90,19 +91,44 @@ namespace GetLocked
             }
         }
 
+        private void timerStart()
+        {
+            myTimer = new System.Threading.Timer(G.Display, this, 500, 1000);
+            this.mainFormTitle = "Timer started";
+        }
+
+        private void timerStop()
+        {
+            if (myTimer != null)
+            {
+                myTimer.Dispose();
+            }
+        }
+
         public void checkIfFocused(String name)
         {
-            Process[] myProcesses = Process.GetProcesses();
             String title = "";
+            Process[] myProcesses = Process.GetProcesses();
+            IntPtr id = GetForegroundWindow();
             foreach (Process myProcess in myProcesses)
             {
-                if (myProcess.MainWindowHandle == GetForegroundWindow())
+                if (myProcess.MainWindowTitle.Length > 0)
                 {
-                    title = myProcess.MainWindowTitle;
-                    break;
+                    if (myProcess.MainWindowHandle == id)
+                    {
+                        title = myProcess.MainWindowTitle;
+                        if (myProcess.MainWindowTitle == name)
+                        {
+                            //MainWindowTitle named "name" found, do something, then.
+                            SwitchToThisWindow(myProcess.MainWindowHandle, true);
+                            showMeOverU(myProcess.MainWindowHandle);
+                            timerStop();
+                        }
+                        break;
+                    }
                 }
             }
-            Console.WriteLine("Got you, 'Name:{0}, ID:{1}' APP activated.", (title == "" ? "N/A" : title), GetForegroundWindow().ToString());
+            Console.WriteLine("Got you, 'Name:{0}, ID:{1}'!", (title == "" ? "N/A" : title), GetForegroundWindow().ToString());
         }
 
         void showMeOverU(IntPtr handle)
@@ -116,16 +142,11 @@ namespace GetLocked
             };
             _ = GetWindowRect(handle, ref rect);
 
-            if (this.TopMost)
-            {
-                this.TopMost = false;
-            } else
-            {
-                this.TopMost = true;
-            }
+            this.TopMost = true;
             this.Location = new System.Drawing.Point(rect.Left, rect.Top);
             this.Size = new System.Drawing.Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
             this.Show();
+            this.Refresh();
         }
 
         public String getFormTitle()
@@ -135,13 +156,70 @@ namespace GetLocked
 
         private void FormAMB_Load(object sender, EventArgs e)
         {
-            myTimer = new System.Threading.Timer(G.Display, this, 2000, 1000);
-            this.mainFormTitle = "Timer started";
+            timerStart();
+        }
+
+        private void FormAMB_Shown(object sender, EventArgs e)
+        {
+            if (is1st)
+            {
+                is1st = false;
+            } else
+            {
+                timerStop();
+            }
+        }
+
+        private void FormAMB_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            timerStop();
+        }
+
+        private void FormAMB_Deactivate(object sender, EventArgs e)
+        {
+            this.TopMost = false;
+            timerStop();
+            timerStart();
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x112)
+            {
+                if (m.WParam.ToInt32() == 0xF020) {
+                    this.TopMost = false;
+                    timerStop();
+                    timerStart();
+                    return;
+                }
+            }
+            base.WndProc(ref m);
         }
 
         private void FormAMB_FormClosing(object sender, FormClosingEventArgs e)
         {
-            myTimer.Dispose();
+            e.Cancel = true;
+            this.Hide();
+            this.ShowInTaskbar = false;
+            this.notifyIcon.Visible = true;
+        }
+
+        private void FormAMB_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.Hide();
+                this.ShowInTaskbar = false;
+                this.notifyIcon.Visible = true;
+            }
+        }
+
+        private void notifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            //notifyIcon.Visible = false;
+            this.ShowInTaskbar = true;
         }
     }
 
