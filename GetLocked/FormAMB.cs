@@ -221,6 +221,14 @@ namespace GetLocked
             //notifyIcon.Visible = false;
             this.ShowInTaskbar = true;
         }
+
+        private void toolStripMenuItemExit_Click(object sender, EventArgs e)
+        {
+            myTimer.Dispose();
+            System.Environment.Exit(System.Environment.ExitCode);
+            this.Dispose();
+            this.Close();
+        }
     }
 
     class Gram
@@ -230,7 +238,7 @@ namespace GetLocked
         {
             FormAMB frm = (FormAMB)obj;
             frm.Text = String.Format("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
-            frm.checkIfFocused("Signal");
+            frm.checkIfFocused("");
         }
     }
 }

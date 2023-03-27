@@ -36,6 +36,8 @@
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -43,6 +45,7 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBoxShowing
@@ -113,10 +116,25 @@
             // 
             // notifyIcon
             // 
+            this.notifyIcon.ContextMenuStrip = this.contextMenuStrip;
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "Facepalm";
             this.notifyIcon.Visible = true;
             this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+            // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemExit});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(181, 48);
+            // 
+            // toolStripMenuItemExit
+            // 
+            this.toolStripMenuItemExit.Name = "toolStripMenuItemExit";
+            this.toolStripMenuItemExit.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItemExit.Text = "E&xit";
+            this.toolStripMenuItemExit.Click += new System.EventHandler(this.toolStripMenuItemExit_Click);
             // 
             // FormAMB
             // 
@@ -143,6 +161,7 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -155,6 +174,8 @@
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExit;
     }
 }
 
