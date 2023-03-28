@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace GetLocked
 {
@@ -19,11 +18,8 @@ namespace GetLocked
 
         private String mainWinTitle = "Signal";
         private String mainFormTitle = "Facepalm";
+        static private Boolean IsPalmed = false;
         private Boolean is1st = true;
-        static private Gram g = new Gram();
-        static private System.Threading.Timer myTimer;
-
-        internal static Gram G { get => g; set => g = value; }
 
         public struct RECT
         {
@@ -94,20 +90,7 @@ namespace GetLocked
             }
         }
 
-        private void timerStart()
-        {
-            myTimer = new System.Threading.Timer(G.Display, this, 500, 1000);
-            this.mainFormTitle = "Timer started";
-        }
-
-        private void timerStop()
-        {
-            if (myTimer != null)
-            {
-                myTimer.Dispose();
-            }
-        }
-
+        /*
         public void checkIfFocused(String name)
         {
             String title = "";
@@ -133,6 +116,7 @@ namespace GetLocked
             }
             Console.WriteLine("Got you, 'Name:{0}, ID:{1}'!", (title == "" ? "N/A" : title), GetForegroundWindow().ToString());
         }
+        */
 
         void showMeOverU(IntPtr handle)
         {
@@ -164,20 +148,18 @@ namespace GetLocked
                 is1st = false;
             } else
             {
-                timerStop();
             }
+            IsPalmed = false;
         }
 
         private void FormAMB_FormClosed(object sender, FormClosedEventArgs e)
         {
-            timerStop();
         }
 
         private void FormAMB_Deactivate(object sender, EventArgs e)
         {
             this.TopMost = false;
-            timerStop();
-            timerStart();
+            IsPalmed = true;
         }
 
         protected override void WndProc(ref Message m)
@@ -186,8 +168,7 @@ namespace GetLocked
             {
                 if (m.WParam.ToInt32() == 0xF020) {
                     this.TopMost = false;
-                    timerStop();
-                    timerStart();
+                    IsPalmed = true;
                     return;
                 }
             }
@@ -209,6 +190,7 @@ namespace GetLocked
                 this.Hide();
                 this.ShowInTaskbar = false;
                 this.notifyIcon.Visible = true;
+                IsPalmed = true;
             }
         }
 
@@ -222,7 +204,6 @@ namespace GetLocked
 
         private void toolStripMenuItemExit_Click(object sender, EventArgs e)
         {
-            myTimer.Dispose();
             System.Environment.Exit(System.Environment.ExitCode);
             this.Dispose();
             this.Close();
@@ -230,8 +211,7 @@ namespace GetLocked
 
         private void FormAMB_Load(object sender, EventArgs e)
         {
-            timerStart();
-            ProcChk pchk = new ProcChk("Signal", 1000);
+            ProcChk pchk = new ProcChk("Signal", 500);
             backgroundWorker.RunWorkerAsync(pchk);
         }
 
@@ -241,6 +221,7 @@ namespace GetLocked
             ProcChk pch = e.Argument as ProcChk;
             while (true)
             {
+                //if (IsPalmed) continue;
                 Process[] myProcesses = Process.GetProcesses();
                 IntPtr id = GetForegroundWindow();
                 foreach (Process myProcess in myProcesses)
@@ -251,8 +232,11 @@ namespace GetLocked
                         {
                             if (myProcess.MainWindowTitle == pch.Name)
                             {
-                                //MainWindowTitle named "name" found, do something, then.
-                                bgWorker.ReportProgress(0, pch.Name + " focused.(" + DateTime.Now.ToString() + ")");
+                                //Todo: MainWindowTitle named "name" focused, do something, then.
+                                ProcChkBk pcb = new ProcChkBk();
+                                pcb.Id = myProcess.MainWindowHandle;
+                                pcb.Msg = pch.Name + " focused.(" + DateTime.Now.ToString() + ")";
+                                bgWorker.ReportProgress(0, pcb);
                             }
                         }
                     }
@@ -268,18 +252,9 @@ namespace GetLocked
             String Title = e.UserState.ToString();
             this.Text = Interval.ToString() + "--" + Title;
             */
-            listBoxShowing.Items.Add(e.UserState.ToString());
-        }
-    }
-
-    class Gram
-    {
-        static private int TimesCalled = 0;
-        public void Display(object obj)
-        {
-            FormAMB frm = (FormAMB)obj;
-            frm.Text = String.Format("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
-            frm.checkIfFocused("");
+            ProcChkBk pcb = e.UserState as ProcChkBk;
+            listBoxShowing.Items.Add(pcb.Msg);
+            showMeOverU(pcb.Id);
         }
     }
 
@@ -292,5 +267,11 @@ namespace GetLocked
             Name = name;
             Interval = interval;
         }
+    }
+
+    class ProcChkBk
+    {
+        public IntPtr Id;
+        public String Msg;
     }
 }
