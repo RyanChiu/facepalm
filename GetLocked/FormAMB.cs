@@ -1,7 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace GetLocked
 {
@@ -154,11 +157,6 @@ namespace GetLocked
             return mainFormTitle;
         }
 
-        private void FormAMB_Load(object sender, EventArgs e)
-        {
-            timerStart();
-        }
-
         private void FormAMB_Shown(object sender, EventArgs e)
         {
             if (is1st)
@@ -229,6 +227,49 @@ namespace GetLocked
             this.Dispose();
             this.Close();
         }
+
+        private void FormAMB_Load(object sender, EventArgs e)
+        {
+            timerStart();
+            ProcChk pchk = new ProcChk("Signal", 1000);
+            backgroundWorker.RunWorkerAsync(pchk);
+        }
+
+        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            BackgroundWorker bgWorker = sender as BackgroundWorker;
+            ProcChk pch = e.Argument as ProcChk;
+            while (true)
+            {
+                Process[] myProcesses = Process.GetProcesses();
+                IntPtr id = GetForegroundWindow();
+                foreach (Process myProcess in myProcesses)
+                {
+                    if (myProcess.MainWindowTitle.Length > 0)
+                    {
+                        if (myProcess.MainWindowHandle == id)
+                        {
+                            if (myProcess.MainWindowTitle == pch.Name)
+                            {
+                                //MainWindowTitle named "name" found, do something, then.
+                                bgWorker.ReportProgress(0, pch.Name + " focused.(" + DateTime.Now.ToString() + ")");
+                            }
+                        }
+                    }
+                }
+                Thread.Sleep(pch.Interval);
+            }
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            /*
+            int Interval = e.ProgressPercentage;
+            String Title = e.UserState.ToString();
+            this.Text = Interval.ToString() + "--" + Title;
+            */
+            listBoxShowing.Items.Add(e.UserState.ToString());
+        }
     }
 
     class Gram
@@ -239,6 +280,17 @@ namespace GetLocked
             FormAMB frm = (FormAMB)obj;
             frm.Text = String.Format("{0} {1}s, keep running.", frm.getFormTitle(), ++TimesCalled);
             frm.checkIfFocused("");
+        }
+    }
+
+    class ProcChk
+    {
+        public String Name;
+        public int Interval;
+        public ProcChk(string name, int interval)
+        {
+            Name = name;
+            Interval = interval;
         }
     }
 }
