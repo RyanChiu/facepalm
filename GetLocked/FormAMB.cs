@@ -18,6 +18,7 @@ namespace GetLocked
 
         private String mainWinTitle = "Signal";
         private String mainFormTitle = "Facepalm";
+        static private int Lasting = 0;
         static private Boolean IsPalmed = false;
         private Boolean is1st = true;
 
@@ -90,34 +91,6 @@ namespace GetLocked
             }
         }
 
-        /*
-        public void checkIfFocused(String name)
-        {
-            String title = "";
-            Process[] myProcesses = Process.GetProcesses();
-            IntPtr id = GetForegroundWindow();
-            foreach (Process myProcess in myProcesses)
-            {
-                if (myProcess.MainWindowTitle.Length > 0)
-                {
-                    if (myProcess.MainWindowHandle == id)
-                    {
-                        title = myProcess.MainWindowTitle;
-                        if (myProcess.MainWindowTitle == name)
-                        {
-                            //MainWindowTitle named "name" found, do something, then.
-                            SwitchToThisWindow(myProcess.MainWindowHandle, true);
-                            showMeOverU(myProcess.MainWindowHandle);
-                            timerStop();
-                        }
-                        break;
-                    }
-                }
-            }
-            Console.WriteLine("Got you, 'Name:{0}, ID:{1}'!", (title == "" ? "N/A" : title), GetForegroundWindow().ToString());
-        }
-        */
-
         void showMeOverU(IntPtr handle)
         {
             RECT rect = new RECT
@@ -129,11 +102,14 @@ namespace GetLocked
             };
             _ = GetWindowRect(handle, ref rect);
 
+            this.WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
             this.TopMost = true;
             this.Location = new System.Drawing.Point(rect.Left, rect.Top);
             this.Size = new System.Drawing.Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
             this.Show();
             this.Refresh();
+            IsPalmed = true;
         }
 
         public String getFormTitle()
@@ -146,10 +122,11 @@ namespace GetLocked
             if (is1st)
             {
                 is1st = false;
+                IsPalmed = false;
             } else
             {
+                //
             }
-            IsPalmed = false;
         }
 
         private void FormAMB_FormClosed(object sender, FormClosedEventArgs e)
@@ -159,16 +136,17 @@ namespace GetLocked
         private void FormAMB_Deactivate(object sender, EventArgs e)
         {
             this.TopMost = false;
-            IsPalmed = true;
+            IsPalmed = false;
         }
 
+        //check if minimized
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == 0x112)
             {
                 if (m.WParam.ToInt32() == 0xF020) {
                     this.TopMost = false;
-                    IsPalmed = true;
+                    IsPalmed = false;
                     return;
                 }
             }
@@ -181,6 +159,7 @@ namespace GetLocked
             this.Hide();
             this.ShowInTaskbar = false;
             this.notifyIcon.Visible = true;
+            IsPalmed = false;
         }
 
         private void FormAMB_Resize(object sender, EventArgs e)
@@ -190,7 +169,7 @@ namespace GetLocked
                 this.Hide();
                 this.ShowInTaskbar = false;
                 this.notifyIcon.Visible = true;
-                IsPalmed = true;
+                IsPalmed = false;
             }
         }
 
@@ -211,7 +190,7 @@ namespace GetLocked
 
         private void FormAMB_Load(object sender, EventArgs e)
         {
-            ProcChk pchk = new ProcChk("Signal", 500);
+            ProcChk pchk = new ProcChk("Signal", 0);
             backgroundWorker.RunWorkerAsync(pchk);
         }
 
@@ -221,27 +200,34 @@ namespace GetLocked
             ProcChk pch = e.Argument as ProcChk;
             while (true)
             {
-                //if (IsPalmed) continue;
-                Process[] myProcesses = Process.GetProcesses();
-                IntPtr id = GetForegroundWindow();
-                foreach (Process myProcess in myProcesses)
+                if (!IsPalmed)
                 {
-                    if (myProcess.MainWindowTitle.Length > 0)
+                    ;
+                    Process[] myProcesses = Process.GetProcesses();
+                    IntPtr id = GetForegroundWindow();
+                    foreach (Process myProcess in myProcesses)
                     {
-                        if (myProcess.MainWindowHandle == id)
+                        if (myProcess.MainWindowTitle.Length > 0)
                         {
-                            if (myProcess.MainWindowTitle == pch.Name)
+                            if (myProcess.MainWindowHandle == id)
                             {
-                                //Todo: MainWindowTitle named "name" focused, do something, then.
-                                ProcChkBk pcb = new ProcChkBk();
-                                pcb.Id = myProcess.MainWindowHandle;
-                                pcb.Msg = pch.Name + " focused.(" + DateTime.Now.ToString() + ")";
-                                bgWorker.ReportProgress(0, pcb);
+                                if (myProcess.MainWindowTitle == pch.Name)
+                                {
+                                    //Todo: MainWindowTitle named "name" focused, do something, then.
+                                    ProcChkBk pcb = new ProcChkBk();
+                                    pcb.Id = myProcess.MainWindowHandle;
+                                    pcb.Msg = pch.Name + " focused.(" + DateTime.Now.ToString() + ")";
+                                    bgWorker.ReportProgress(0, pcb);
+                                }
                             }
                         }
                     }
+                    if (pch.Interval != 0)
+                    {
+                        Thread.Sleep(pch.Interval);
+                        Lasting += pch.Interval;
+                    }
                 }
-                Thread.Sleep(pch.Interval);
             }
         }
 
@@ -255,6 +241,7 @@ namespace GetLocked
             ProcChkBk pcb = e.UserState as ProcChkBk;
             listBoxShowing.Items.Add(pcb.Msg);
             showMeOverU(pcb.Id);
+            this.Text = mainFormTitle + "/" + Lasting.ToString();
         }
     }
 
