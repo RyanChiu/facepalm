@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Linq;
 
 namespace GetLocked
 {
@@ -81,6 +83,7 @@ namespace GetLocked
                  * and watch the item, then.
                 */
                 watchingTitle = listBoxShowing.Items[index].ToString();
+                setConfigValue("watching", watchingTitle);
                 MessageBox.Show(watchingTitle + ", watched.");
             }
         }
@@ -106,9 +109,35 @@ namespace GetLocked
             IsPalmed = true;
         }
 
-        public String getFormTitle()
+        public String getConfigValue(String key)
         {
-            return mainFormTitle;
+            return ConfigurationManager.AppSettings[key];
+        }
+
+        public bool setConfigValue(String key, String value) 
+        {
+            try
+            {
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                if (config != null)
+                {
+                    AppSettingsSection appSettings = (AppSettingsSection)config.GetSection("appSettings");
+                    if (appSettings.Settings.AllKeys.Contains(key))
+                    {
+                        appSettings.Settings[key].Value = value;
+                    } else
+                    {
+                        appSettings.Settings.Add(key, value);
+                    }
+                    config.Save();
+                    return true;
+                }
+                return false;
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
         private void FormAMB_Shown(object sender, EventArgs e)
@@ -184,6 +213,11 @@ namespace GetLocked
 
         private void FormAMB_Load(object sender, EventArgs e)
         {
+            String watching = getConfigValue("watching");
+            if (!String.IsNullOrEmpty(watching))
+            {
+                watchingTitle = watching;
+            }
             backgroundWorker.RunWorkerAsync(0);
         }
 
