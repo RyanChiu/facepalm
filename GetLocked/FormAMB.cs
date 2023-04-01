@@ -49,7 +49,7 @@ namespace GetLocked
             int cnt = 0;
             foreach (Process myProcess in myProcesses)
             {
-                if (myProcess.MainWindowTitle.Length > 0)
+                if (myProcess.MainWindowTitle.Length > 0 && Process.GetCurrentProcess().Id != myProcess.Id)
                 {
                     textBoxShowing.Text += "Task name: " + myProcess.MainWindowTitle
                        + " [Id:" + myProcess.Id
@@ -81,12 +81,17 @@ namespace GetLocked
                 /* save the picked (double clicked) item to a local file like ini or sth. like that,
                  * and watch the item, then.
                 */
-                watchingTitle = listBoxShowing.Items[index].ToString();
+                changeWatchingTitle(listBoxShowing.Items[index].ToString());
                 setConfigValue("watching", watchingTitle);
                 MessageBox.Show(watchingTitle + ", watched.");
             }
         }
 
+        void changeWatchingTitle(String w)
+        {
+            watchingTitle = w;
+            this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+        }
         void showMeOverU(IntPtr handle)
         {
             RECT rect = new RECT
@@ -215,8 +220,7 @@ namespace GetLocked
             String watching = getConfigValue("watching");
             if (!String.IsNullOrEmpty(watching))
             {
-                watchingTitle = watching;
-                this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+                changeWatchingTitle(watching);
             }
             backgroundWorker.RunWorkerAsync();
         }
