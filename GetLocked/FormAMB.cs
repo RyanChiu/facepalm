@@ -20,7 +20,6 @@ namespace GetLocked
 
         private String watchingTitle = "Signal";
         private String mainFormTitle = "Facepalm";
-        static private int Lasting = 0;
         static private Boolean IsPalmed = false;
         private Boolean is1st = true;
 
@@ -217,14 +216,14 @@ namespace GetLocked
             if (!String.IsNullOrEmpty(watching))
             {
                 watchingTitle = watching;
+                this.Text = mainFormTitle + "->[" + watchingTitle + "]";
             }
-            backgroundWorker.RunWorkerAsync(0);
+            backgroundWorker.RunWorkerAsync();
         }
 
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             BackgroundWorker bgWorker = sender as BackgroundWorker;
-            int Interval = (int)e.Argument;
             while (true)
             {
                 if (!IsPalmed)
@@ -249,11 +248,6 @@ namespace GetLocked
                             }
                         }
                     }
-                    if (Interval != 0)
-                    {
-                        Thread.Sleep(Interval);
-                        Lasting += Interval;
-                    }
                 }
             }
         }
@@ -268,7 +262,7 @@ namespace GetLocked
             ProcChkBk pcb = e.UserState as ProcChkBk;
             listBoxShowing.Items.Add(pcb.Msg);
             showMeOverU(pcb.Id);
-            this.Text = mainFormTitle + "/" + Lasting.ToString();
+            this.Text = mainFormTitle + "->[" + watchingTitle + "]";
         }
     }
 
