@@ -16,7 +16,7 @@ namespace GetLocked
             this.listBoxShowing.MouseDoubleClick += new MouseEventHandler(listBoxShowing_MouseDoubleClick);
         }
 
-        private String mainWinTitle = "Signal";
+        private String watchingTitle = "Signal";
         private String mainFormTitle = "Facepalm";
         static private int Lasting = 0;
         static private Boolean IsPalmed = false;
@@ -59,10 +59,10 @@ namespace GetLocked
 
                     listBoxShowing.Items.Add(myProcess.MainWindowTitle);
                 }
-                if (myProcess.MainWindowTitle == mainWinTitle)
+                if (myProcess.MainWindowTitle == watchingTitle)
                 {
                     cnt++;
-                    MessageBox.Show("Hey, [" + mainWinTitle + ", " + myProcess.Id + "," + myProcess.SessionId + "], there you are.(" + cnt + " times)");
+                    MessageBox.Show("Hey, [" + watchingTitle + ", " + myProcess.Id + "," + myProcess.SessionId + "], there you are.(" + cnt + " times)");
                 }
                 else
                 {
@@ -77,17 +77,11 @@ namespace GetLocked
             if (index != System.Windows.Forms.ListBox.NoMatches)
             {
                 // to do what you want
-                String mainWinTitle = listBoxShowing.Items[index].ToString();
-                MessageBox.Show(mainWinTitle);
-                Process[] myProcesses = Process.GetProcesses();
-                foreach (Process myProcess in myProcesses)
-                {
-                    if (myProcess.MainWindowTitle == mainWinTitle)
-                    {
-                        SwitchToThisWindow(myProcess.MainWindowHandle, true);
-                        showMeOverU(myProcess.MainWindowHandle);
-                    }
-                }
+                /* save the picked (double clicked) item to a local file like ini or sth. like that,
+                 * and watch the item, then.
+                */
+                watchingTitle = listBoxShowing.Items[index].ToString();
+                MessageBox.Show(watchingTitle + ", watched.");
             }
         }
 
@@ -190,14 +184,13 @@ namespace GetLocked
 
         private void FormAMB_Load(object sender, EventArgs e)
         {
-            ProcChk pchk = new ProcChk("Signal", 0);
-            backgroundWorker.RunWorkerAsync(pchk);
+            backgroundWorker.RunWorkerAsync(0);
         }
 
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             BackgroundWorker bgWorker = sender as BackgroundWorker;
-            ProcChk pch = e.Argument as ProcChk;
+            int Interval = (int)e.Argument;
             while (true)
             {
                 if (!IsPalmed)
@@ -211,21 +204,21 @@ namespace GetLocked
                         {
                             if (myProcess.MainWindowHandle == id)
                             {
-                                if (myProcess.MainWindowTitle == pch.Name)
+                                if (myProcess.MainWindowTitle == watchingTitle)
                                 {
                                     //Todo: MainWindowTitle named "name" focused, do something, then.
                                     ProcChkBk pcb = new ProcChkBk();
                                     pcb.Id = myProcess.MainWindowHandle;
-                                    pcb.Msg = pch.Name + " focused.(" + DateTime.Now.ToString() + ")";
+                                    pcb.Msg = watchingTitle + " focused.(" + DateTime.Now.ToString() + ")";
                                     bgWorker.ReportProgress(0, pcb);
                                 }
                             }
                         }
                     }
-                    if (pch.Interval != 0)
+                    if (Interval != 0)
                     {
-                        Thread.Sleep(pch.Interval);
-                        Lasting += pch.Interval;
+                        Thread.Sleep(Interval);
+                        Lasting += Interval;
                     }
                 }
             }
@@ -242,17 +235,6 @@ namespace GetLocked
             listBoxShowing.Items.Add(pcb.Msg);
             showMeOverU(pcb.Id);
             this.Text = mainFormTitle + "/" + Lasting.ToString();
-        }
-    }
-
-    class ProcChk
-    {
-        public String Name;
-        public int Interval;
-        public ProcChk(string name, int interval)
-        {
-            Name = name;
-            Interval = interval;
         }
     }
 
