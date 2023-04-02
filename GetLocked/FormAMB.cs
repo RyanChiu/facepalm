@@ -43,7 +43,6 @@ namespace GetLocked
 
         private void BtnClickMe_Click(object sender, EventArgs e)
         {
-            textBoxShowing.Text = string.Empty;
             listBoxShowing.Items.Clear();
             Process[] myProcesses = Process.GetProcesses();
             int cnt = 0;
@@ -51,13 +50,6 @@ namespace GetLocked
             {
                 if (myProcess.MainWindowTitle.Length > 0 && Process.GetCurrentProcess().Id != myProcess.Id)
                 {
-                    textBoxShowing.Text += "Task name: " + myProcess.MainWindowTitle
-                       + " [Id:" + myProcess.Id
-                       + ", sessionId:" + myProcess.SessionId
-                       + ", procName:" + myProcess.ProcessName
-                       // + ", Container:" + myProcess.Container.Components.ToString()
-                       + "]" + "\r\n";
-
                     listBoxShowing.Items.Add(myProcess.MainWindowTitle);
                 }
                 if (myProcess.MainWindowTitle == watchingTitle)

@@ -30,35 +30,19 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAMB));
-            this.textBoxShowing = new System.Windows.Forms.TextBox();
             this.BtnClickMe = new System.Windows.Forms.Button();
-            this.listBoxShowing = new System.Windows.Forms.ListBox();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.listBoxShowing = new System.Windows.Forms.ListBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // textBoxShowing
-            // 
-            this.textBoxShowing.Location = new System.Drawing.Point(3, 4);
-            this.textBoxShowing.Multiline = true;
-            this.textBoxShowing.Name = "textBoxShowing";
-            this.textBoxShowing.ReadOnly = true;
-            this.textBoxShowing.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxShowing.Size = new System.Drawing.Size(185, 338);
-            this.textBoxShowing.TabIndex = 2;
-            this.textBoxShowing.WordWrap = false;
             // 
             // BtnClickMe
             // 
@@ -68,33 +52,9 @@
             this.BtnClickMe.Name = "BtnClickMe";
             this.BtnClickMe.Size = new System.Drawing.Size(548, 25);
             this.BtnClickMe.TabIndex = 0;
-            this.BtnClickMe.Text = "ClickMe";
+            this.BtnClickMe.Text = "Show me the windows";
             this.BtnClickMe.UseVisualStyleBackColor = true;
             this.BtnClickMe.Click += new System.EventHandler(this.BtnClickMe_Click);
-            // 
-            // listBoxShowing
-            // 
-            this.listBoxShowing.FormattingEnabled = true;
-            this.listBoxShowing.ItemHeight = 12;
-            this.listBoxShowing.Location = new System.Drawing.Point(10, 3);
-            this.listBoxShowing.MultiColumn = true;
-            this.listBoxShowing.Name = "listBoxShowing";
-            this.listBoxShowing.Size = new System.Drawing.Size(332, 340);
-            this.listBoxShowing.TabIndex = 3;
-            // 
-            // splitContainer
-            // 
-            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer.Name = "splitContainer";
-            // 
-            // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.Controls.Add(this.textBoxShowing);
-            this.splitContainer.Size = new System.Drawing.Size(548, 347);
-            this.splitContainer.SplitterDistance = 345;
-            this.splitContainer.SplitterWidth = 3;
-            this.splitContainer.TabIndex = 4;
             // 
             // splitContainer1
             // 
@@ -106,7 +66,6 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.listBoxShowing);
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer);
             // 
             // splitContainer1.Panel2
             // 
@@ -114,6 +73,17 @@
             this.splitContainer1.Size = new System.Drawing.Size(548, 376);
             this.splitContainer1.SplitterDistance = 347;
             this.splitContainer1.TabIndex = 5;
+            // 
+            // listBoxShowing
+            // 
+            this.listBoxShowing.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxShowing.FormattingEnabled = true;
+            this.listBoxShowing.ItemHeight = 12;
+            this.listBoxShowing.Location = new System.Drawing.Point(0, 0);
+            this.listBoxShowing.MultiColumn = true;
+            this.listBoxShowing.Name = "listBoxShowing";
+            this.listBoxShowing.Size = new System.Drawing.Size(548, 347);
+            this.listBoxShowing.TabIndex = 4;
             // 
             // notifyIcon
             // 
@@ -160,10 +130,6 @@
             this.Load += new System.EventHandler(this.FormAMB_Load);
             this.Shown += new System.EventHandler(this.FormAMB_Shown);
             this.Resize += new System.EventHandler(this.FormAMB_Resize);
-            this.splitContainer.Panel2.ResumeLayout(false);
-            this.splitContainer.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
@@ -175,16 +141,13 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textBoxShowing;
         private System.Windows.Forms.Button BtnClickMe;
-        private System.Windows.Forms.ListBox listBoxShowing;
-        private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExit;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
+        private System.Windows.Forms.ListBox listBoxShowing;
     }
 }
 
