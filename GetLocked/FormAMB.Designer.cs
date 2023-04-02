@@ -126,7 +126,6 @@
             this.Text = "Facepalm";
             this.Deactivate += new System.EventHandler(this.FormAMB_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormAMB_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormAMB_FormClosed);
             this.Load += new System.EventHandler(this.FormAMB_Load);
             this.Shown += new System.EventHandler(this.FormAMB_Shown);
             this.Resize += new System.EventHandler(this.FormAMB_Resize);

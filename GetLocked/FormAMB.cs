@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Linq;
@@ -148,10 +147,6 @@ namespace GetLocked
             }
         }
 
-        private void FormAMB_FormClosed(object sender, FormClosedEventArgs e)
-        {
-        }
-
         private void FormAMB_Deactivate(object sender, EventArgs e)
         {
             this.TopMost = false;
@@ -178,7 +173,7 @@ namespace GetLocked
             this.Hide();
             this.ShowInTaskbar = false;
             this.notifyIcon.Visible = true;
-            IsPalmed = false;
+            IsPalmed = true;
         }
 
         private void FormAMB_Resize(object sender, EventArgs e)
@@ -222,25 +217,28 @@ namespace GetLocked
             BackgroundWorker bgWorker = sender as BackgroundWorker;
             while (true)
             {
-                if (!IsPalmed)
+                Process[] myProcesses = Process.GetProcesses();
+                IntPtr id = GetForegroundWindow();
+                foreach (Process myProcess in myProcesses)
                 {
-                    ;
-                    Process[] myProcesses = Process.GetProcesses();
-                    IntPtr id = GetForegroundWindow();
-                    foreach (Process myProcess in myProcesses)
+                    if (myProcess.MainWindowTitle.Length > 0)
                     {
-                        if (myProcess.MainWindowTitle.Length > 0)
+                        if (myProcess.MainWindowHandle == id)
                         {
-                            if (myProcess.MainWindowHandle == id)
+                            if (myProcess.MainWindowTitle == watchingTitle)
                             {
-                                if (myProcess.MainWindowTitle == watchingTitle)
+                                //Todo: MainWindowTitle named "watchingTile" focused.
+                                if (!IsPalmed) // if it's not palmed, then report it
                                 {
-                                    //Todo: MainWindowTitle named "name" focused, do something, then.
                                     ProcChkBk pcb = new ProcChkBk();
                                     pcb.Id = myProcess.MainWindowHandle;
                                     pcb.Msg = watchingTitle + " focused.(" + DateTime.Now.ToString() + ")";
                                     bgWorker.ReportProgress(0, pcb);
                                 }
+                            }
+                            else
+                            {
+                                IsPalmed = false;
                             }
                         }
                     }
@@ -250,11 +248,6 @@ namespace GetLocked
 
         private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
-            /*
-            int Interval = e.ProgressPercentage;
-            String Title = e.UserState.ToString();
-            this.Text = Interval.ToString() + "--" + Title;
-            */
             ProcChkBk pcb = e.UserState as ProcChkBk;
             listBoxShowing.Items.Add(pcb.Msg);
             showMeOverU(pcb.Id);
