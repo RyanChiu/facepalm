@@ -74,14 +74,15 @@ namespace GetLocked
                 */
                 changeWatchingTitle(listBoxShowing.Items[index].ToString());
                 setConfigValue("watching", watchingTitle);
-                MessageBox.Show(watchingTitle + ", watched.");
+                MessageBox.Show("Window [" + watchingTitle + "], watched.");
             }
         }
 
         void changeWatchingTitle(String w)
         {
             watchingTitle = w;
-            this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+            this.Text = mainFormTitle + "->[" + w + "]";
+            notifyIcon.Text = this.Text;
         }
         void showMeOverU(IntPtr handle)
         {
