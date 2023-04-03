@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Linq;
+using System.CodeDom;
 
 namespace GetLocked
 {
@@ -31,11 +32,11 @@ namespace GetLocked
         }
 
         [DllImport("user32.dll")]
-        private static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
-
-        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+
+        [DllImport("user32.dll")]
+        public static extern bool IsWindowVisible(IntPtr hWnd);
 
         [DllImport("user32.dll", EntryPoint = "GetForegroundWindow")]
         public static extern IntPtr GetForegroundWindow();

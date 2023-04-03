@@ -38,10 +38,10 @@ namespace GetLocked
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabSettings = new System.Windows.Forms.TabPage();
-            this.tabPalming = new System.Windows.Forms.TabPage();
             this.splitContainerSettings = new System.Windows.Forms.SplitContainer();
             this.listBoxShowing = new System.Windows.Forms.ListBox();
             this.BtnClickMe = new System.Windows.Forms.Button();
+            this.tabPalming = new System.Windows.Forms.TabPage();
             this.contextMenuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabSettings.SuspendLayout();
@@ -85,36 +85,24 @@ namespace GetLocked
             this.tabControl.Controls.Add(this.tabSettings);
             this.tabControl.Controls.Add(this.tabPalming);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.ItemSize = new System.Drawing.Size(0, 1);
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(548, 376);
+            this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl.TabIndex = 1;
-            this.tabControl.SizeMode = TabSizeMode.Fixed;
-            this.tabControl.ItemSize = new System.Drawing.Size(0, 1);
             // 
             // tabSettings
             // 
             this.tabSettings.Controls.Add(this.splitContainerSettings);
-            this.tabSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabSettings.Location = new System.Drawing.Point(4, 5);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSettings.Size = new System.Drawing.Size(540, 350);
+            this.tabSettings.Size = new System.Drawing.Size(540, 367);
             this.tabSettings.TabIndex = 0;
             this.tabSettings.Text = "tabSettings";
             this.tabSettings.UseVisualStyleBackColor = true;
-            // 
-            // tabPalming
-            // 
-            this.tabPalming.BackgroundImage = global::Facepalm.Properties.Resources.wallhaven_4gq2xl;
-            this.tabPalming.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.tabPalming.Location = new System.Drawing.Point(4, 22);
-            this.tabPalming.Name = "tabPalming";
-            this.tabPalming.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPalming.Size = new System.Drawing.Size(540, 350);
-            this.tabPalming.TabIndex = 1;
-            this.tabPalming.Text = "tabPalming";
-            this.tabPalming.UseVisualStyleBackColor = true;
             // 
             // splitContainerSettings
             // 
@@ -130,8 +118,8 @@ namespace GetLocked
             // splitContainerSettings.Panel2
             // 
             this.splitContainerSettings.Panel2.Controls.Add(this.BtnClickMe);
-            this.splitContainerSettings.Size = new System.Drawing.Size(534, 344);
-            this.splitContainerSettings.SplitterDistance = 315;
+            this.splitContainerSettings.Size = new System.Drawing.Size(534, 361);
+            this.splitContainerSettings.SplitterDistance = 330;
             this.splitContainerSettings.TabIndex = 6;
             // 
             // listBoxShowing
@@ -142,7 +130,7 @@ namespace GetLocked
             this.listBoxShowing.Location = new System.Drawing.Point(0, 0);
             this.listBoxShowing.MultiColumn = true;
             this.listBoxShowing.Name = "listBoxShowing";
-            this.listBoxShowing.Size = new System.Drawing.Size(534, 315);
+            this.listBoxShowing.Size = new System.Drawing.Size(534, 330);
             this.listBoxShowing.TabIndex = 4;
             // 
             // BtnClickMe
@@ -151,11 +139,23 @@ namespace GetLocked
             this.BtnClickMe.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BtnClickMe.Location = new System.Drawing.Point(0, 0);
             this.BtnClickMe.Name = "BtnClickMe";
-            this.BtnClickMe.Size = new System.Drawing.Size(534, 25);
+            this.BtnClickMe.Size = new System.Drawing.Size(534, 27);
             this.BtnClickMe.TabIndex = 0;
             this.BtnClickMe.Text = "Show me the windows";
             this.BtnClickMe.UseVisualStyleBackColor = true;
             this.BtnClickMe.Click += new System.EventHandler(this.BtnClickMe_Click);
+            // 
+            // tabPalming
+            // 
+            this.tabPalming.BackgroundImage = global::Facepalm.Properties.Resources.wallhaven_4gq2xl_small;
+            this.tabPalming.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.tabPalming.Location = new System.Drawing.Point(4, 5);
+            this.tabPalming.Name = "tabPalming";
+            this.tabPalming.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPalming.Size = new System.Drawing.Size(540, 367);
+            this.tabPalming.TabIndex = 1;
+            this.tabPalming.Text = "tabPalming";
+            this.tabPalming.UseVisualStyleBackColor = true;
             // 
             // FormAMB
             // 
