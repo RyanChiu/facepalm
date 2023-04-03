@@ -158,20 +158,6 @@ namespace GetLocked
             IsPalmed = false;
         }
 
-        //check if minimized
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == 0x112)
-            {
-                if (m.WParam.ToInt32() == 0xF020) {
-                    this.TopMost = false;
-                    IsPalmed = false;
-                    return;
-                }
-            }
-            base.WndProc(ref m);
-        }
-
         private void FormAMB_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
