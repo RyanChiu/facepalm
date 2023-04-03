@@ -90,6 +90,7 @@
   <ItemGroup>
     <Content Include="facepalm00.ico" />
     <Content Include="facepalm01.ico" />
+    <None Include="Resources\wallhaven-4gq2xl.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

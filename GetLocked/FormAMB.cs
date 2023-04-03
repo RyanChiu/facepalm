@@ -86,6 +86,9 @@ namespace GetLocked
         }
         void showMeOverU(IntPtr handle)
         {
+            // Select the tab to show
+            tabControl.SelectTab(1);
+
             RECT rect = new RECT
             {
                 Left = 0,
@@ -190,6 +193,7 @@ namespace GetLocked
 
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
         {
+            tabControl.SelectTab(0);
             this.Show();
             this.WindowState = FormWindowState.Normal;
             //notifyIcon.Visible = false;

@@ -59,5 +59,15 @@ namespace Facepalm.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap wallhaven_4gq2xl {
+            get {
+                object obj = ResourceManager.GetObject("wallhaven-4gq2xl", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
