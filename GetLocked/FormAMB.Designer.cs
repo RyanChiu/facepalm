@@ -42,6 +42,7 @@ namespace GetLocked
             this.listBoxShowing = new System.Windows.Forms.ListBox();
             this.BtnClickMe = new System.Windows.Forms.Button();
             this.tabPalming = new System.Windows.Forms.TabPage();
+            this.textPwd = new System.Windows.Forms.TextBox();
             this.contextMenuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabSettings.SuspendLayout();
@@ -49,6 +50,7 @@ namespace GetLocked
             this.splitContainerSettings.Panel1.SuspendLayout();
             this.splitContainerSettings.Panel2.SuspendLayout();
             this.splitContainerSettings.SuspendLayout();
+            this.tabPalming.SuspendLayout();
             this.SuspendLayout();
             // 
             // notifyIcon
@@ -147,8 +149,9 @@ namespace GetLocked
             // 
             // tabPalming
             // 
-            this.tabPalming.BackgroundImage = global::Facepalm.Properties.Resources.wallhaven_4gq2xl_small;
+            this.tabPalming.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("tabPalming.BackgroundImage")));
             this.tabPalming.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.tabPalming.Controls.Add(this.textPwd);
             this.tabPalming.Location = new System.Drawing.Point(4, 5);
             this.tabPalming.Name = "tabPalming";
             this.tabPalming.Padding = new System.Windows.Forms.Padding(3);
@@ -156,6 +159,23 @@ namespace GetLocked
             this.tabPalming.TabIndex = 1;
             this.tabPalming.Text = "tabPalming";
             this.tabPalming.UseVisualStyleBackColor = true;
+            // 
+            // textPwd
+            // 
+            this.textPwd.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.textPwd.BackColor = System.Drawing.SystemColors.Window;
+            this.textPwd.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textPwd.Location = new System.Drawing.Point(228, 167);
+            this.textPwd.Name = "textPwd";
+            this.textPwd.PasswordChar = '*';
+            this.textPwd.Size = new System.Drawing.Size(68, 21);
+            this.textPwd.TabIndex = 0;
+            this.textPwd.Visible = true;
+            this.textPwd.Enabled = true;
+            this.textPwd.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textPwd.UseSystemPasswordChar = true;
+            this.textPwd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textPwd_KeyPress);
+            this.textPwd.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textPwd_KeyUp);
             // 
             // FormAMB
             // 
@@ -167,6 +187,7 @@ namespace GetLocked
             this.MinimizeBox = false;
             this.Name = "FormAMB";
             this.Text = "Facepalm";
+            this.Activated += new System.EventHandler(this.FormAMB_Activated);
             this.Deactivate += new System.EventHandler(this.FormAMB_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormAMB_FormClosing);
             this.Load += new System.EventHandler(this.FormAMB_Load);
@@ -180,6 +201,8 @@ namespace GetLocked
             this.splitContainerSettings.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerSettings)).EndInit();
             this.splitContainerSettings.ResumeLayout(false);
+            this.tabPalming.ResumeLayout(false);
+            this.tabPalming.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -195,6 +218,7 @@ namespace GetLocked
         private System.Windows.Forms.ListBox listBoxShowing;
         private System.Windows.Forms.Button BtnClickMe;
         private System.Windows.Forms.TabPage tabPalming;
+        private TextBox textPwd;
     }
 }
 

@@ -89,6 +89,7 @@ namespace GetLocked
         {
             // Select the tab to show
             tabControl.SelectTab(1);
+            textPwd.Focus();
 
             RECT rect = new RECT
             {
@@ -140,6 +141,16 @@ namespace GetLocked
             }
         }
 
+        private void hideToNotifyIcon()
+        {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            this.notifyIcon.Visible = true;
+            IsPalmed = true;
+            textPwd.Text = "";
+            textPwd.Focus();
+        }
+
         private void FormAMB_Shown(object sender, EventArgs e)
         {
             if (is1st)
@@ -161,10 +172,7 @@ namespace GetLocked
         private void FormAMB_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            this.Hide();
-            this.ShowInTaskbar = false;
-            this.notifyIcon.Visible = true;
-            IsPalmed = true;
+            hideToNotifyIcon();
         }
 
         private void FormAMB_Resize(object sender, EventArgs e)
@@ -244,6 +252,39 @@ namespace GetLocked
             listBoxShowing.Items.Add(pcb.Msg);
             showMeOverU(pcb.Id);
             this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+        }
+
+        private void textPwd_KeyUp(object sender, KeyEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            if (tb.Text.Length == 4)
+            {
+                hideToNotifyIcon();
+            }
+        }
+
+        private void textPwd_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            base.OnKeyPress(e);
+            if (tb.ReadOnly)
+            {
+                return;
+            }
+            if (!char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+                return;
+            } 
+            else
+            {
+                
+            }
+        }
+
+        private void FormAMB_Activated(object sender, EventArgs e)
+        {
+            textPwd.Focus();
         }
     }
 
