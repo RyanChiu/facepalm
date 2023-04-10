@@ -112,6 +112,7 @@ namespace GetLocked
 
         public String getConfigValue(String key)
         {
+            ConfigurationManager.RefreshSection("appSettings");
             return ConfigurationManager.AppSettings[key];
         }
 
@@ -259,7 +260,27 @@ namespace GetLocked
             TextBox tb = sender as TextBox;
             if (tb.Text.Length == 4)
             {
-                hideToNotifyIcon();
+                String pwd = getConfigValue("password");
+                if (String.IsNullOrEmpty(pwd))
+                {
+                    MessageBox.Show("It seems that it's your first time entering the password," +
+                        " please remember it, a 4 digits. You need to enter the same one the next time.");
+                    setConfigValue("password", tb.Text);
+                    hideToNotifyIcon();
+                } 
+                else
+                {
+                    if (pwd != tb.Text)
+                    {
+                        tb.Text = "";
+                        tb.Focus();
+                        MessageBox.Show("Wrong, please re-enter it.");
+                    }
+                    else
+                    {
+                        hideToNotifyIcon();
+                    }
+                }
             }
         }
 
