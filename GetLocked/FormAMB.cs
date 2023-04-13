@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Linq;
 using System.CodeDom;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace GetLocked
 {
@@ -108,6 +110,27 @@ namespace GetLocked
             this.Show();
             this.Refresh();
             IsPalmed = true;
+        }
+
+        private string MD5Hash(string text)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
+
+            //compute hash from the bytes of text  
+            md5.ComputeHash(ASCIIEncoding.ASCII.GetBytes(text));
+
+            //get hash result after compute it  
+            byte[] result = md5.Hash;
+
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+            {
+                //change it into 2 hexadecimal digits  
+                //for each byte  
+                strBuilder.Append(result[i].ToString("x2"));
+            }
+
+            return strBuilder.ToString();
         }
 
         public String getConfigValue(String key)
@@ -265,12 +288,12 @@ namespace GetLocked
                 {
                     MessageBox.Show("It seems that it's your first time entering the password," +
                         " please remember it, a 4 digits. You need to enter the same one the next time.");
-                    setConfigValue("password", tb.Text);
+                    setConfigValue("password", MD5Hash(tb.Text));
                     hideToNotifyIcon();
                 } 
                 else
                 {
-                    if (pwd != tb.Text)
+                    if (pwd != MD5Hash(tb.Text))
                     {
                         tb.Text = "";
                         tb.Focus();
