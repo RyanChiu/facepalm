@@ -35,7 +35,6 @@ namespace GetLocked
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabSettings = new System.Windows.Forms.TabPage();
             this.splitContainerSettings = new System.Windows.Forms.SplitContainer();
@@ -67,20 +66,14 @@ namespace GetLocked
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemExit});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(95, 26);
+            this.contextMenuStrip.Size = new System.Drawing.Size(97, 26);
             // 
             // toolStripMenuItemExit
             // 
             this.toolStripMenuItemExit.Name = "toolStripMenuItemExit";
-            this.toolStripMenuItemExit.Size = new System.Drawing.Size(94, 22);
+            this.toolStripMenuItemExit.Size = new System.Drawing.Size(96, 22);
             this.toolStripMenuItemExit.Text = "E&xit";
             this.toolStripMenuItemExit.Click += new System.EventHandler(this.toolStripMenuItemExit_Click);
-            // 
-            // backgroundWorker
-            // 
-            this.backgroundWorker.WorkerReportsProgress = true;
-            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
-            this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             // 
             // tabControl
             // 
@@ -170,8 +163,6 @@ namespace GetLocked
             this.textPwd.PasswordChar = '*';
             this.textPwd.Size = new System.Drawing.Size(68, 21);
             this.textPwd.TabIndex = 0;
-            this.textPwd.Visible = true;
-            this.textPwd.Enabled = true;
             this.textPwd.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textPwd.UseSystemPasswordChar = true;
             this.textPwd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textPwd_KeyPress);
@@ -211,7 +202,6 @@ namespace GetLocked
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExit;
-        private System.ComponentModel.BackgroundWorker backgroundWorker;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabSettings;
         private System.Windows.Forms.SplitContainer splitContainerSettings;

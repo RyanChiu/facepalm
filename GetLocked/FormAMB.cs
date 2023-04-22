@@ -13,49 +13,86 @@ namespace GetLocked
 {
     public partial class FormAMB : Form
     {
-        WinEventDelegate dele = null;
+        WinEventDelegate deleFG = null;
+        WinEventDelegate deleSH = null;
         public FormAMB()
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
             this.listBoxShowing.MouseDoubleClick += new MouseEventHandler(listBoxShowing_MouseDoubleClick);
 
-            dele = new WinEventDelegate(WinEventProc);
-            IntPtr m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, dele, 0, 0, WINEVENT_OUTOFCONTEXT);
+            deleFG = new WinEventDelegate(WinEventProc);
+            deleSH = new WinEventDelegate(WinEventProc);
+            IntPtr m_hhook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 
+                IntPtr.Zero, deleFG, 0, 0, WINEVENT_OUTOFCONTEXT);
+            _ = SetWinEventHook(EVENT_OBJECT_CLOAKED, EVENT_OBJECT_CLOAKED,
+                IntPtr.Zero, deleSH, 0, 0, WINEVENT_OUTOFCONTEXT);
         }
 
-        delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, 
+            int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
 
         [DllImport("user32.dll")]
-        static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+        static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, 
+            WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
 
         private const uint WINEVENT_OUTOFCONTEXT = 0;
         private const uint EVENT_SYSTEM_FOREGROUND = 3;
+        private const uint EVENT_OBJECT_CLOAKED = 0x8017;
+        private const int GWL_STYLE = -16;
+        private const uint WS_VISIBLE = 0x10000000;
 
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
-        private string GetActiveWindowTitle()
+        private string GetWindowTitle(IntPtr hWnd)
         {
             const int nChars = 256;
             IntPtr handle = IntPtr.Zero;
             StringBuilder Buff = new StringBuilder(nChars);
-            handle = GetForegroundWindow();
 
-            if (GetWindowText(handle, Buff, nChars) > 0)
+            if (GetWindowText(hWnd, Buff, nChars) > 0)
             {
                 return Buff.ToString();
             }
             return null;
         }
 
-        public void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        public void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, 
+            int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
             // Write every "activated window"'s title on the console line.
-            Console.WriteLine(GetActiveWindowTitle());
+            String title = GetWindowTitle(hwnd);
+            Console.WriteLine(title + ", and the 'eventType is valued: " + eventType.ToString());
+            if (eventType == EVENT_SYSTEM_FOREGROUND)
+            {
+                Console.WriteLine("And <" + watchingTitle + "/" + watchingHandle.ToString() + ">'s " + (IsPalmed ? "" : "not ") + "palmed.");
+                Console.WriteLine("And it's " + (isItVisible(watchingHandle) ? "visible" : "invisible") + ".");
+                if (title == watchingTitle)
+                {
+                    //MessageBox.Show(title);
+                    Console.WriteLine(title + ", gotcha.");
+                    if (!IsPalmed && isItVisible(watchingHandle))
+                    {
+                        showMeOverU(hwnd);
+                        this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Now, it's not the watching one on top, it's <" + title + ">.");
+                    
+                    if (!isItVisible(watchingHandle))
+                    {
+                        Console.WriteLine("***Now this <" + watchingTitle + "> window is invisible.***");
+                        //IsPalmed = false;
+                    }
+                }
+            }
         }
 
         private String watchingTitle = "Signal";
+        private IntPtr watchingHandle = IntPtr.Zero;
         private String mainFormTitle = "Facepalm";
         static private Boolean IsPalmed = false;
         private Boolean is1st = true;
@@ -74,6 +111,12 @@ namespace GetLocked
 
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern UInt32 GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
 
         [DllImport("user32.dll", EntryPoint = "GetForegroundWindow")]
         public static extern IntPtr GetForegroundWindow();
@@ -116,6 +159,13 @@ namespace GetLocked
             }
         }
 
+        bool isItVisible(IntPtr hWnd)
+        {
+            UInt32 style = GetWindowLong(hWnd, GWL_STYLE);
+            bool visible = ((style & WS_VISIBLE) != WS_VISIBLE);
+            return visible;
+        }
+
         void changeWatchingTitle(String w)
         {
             watchingTitle = w;
@@ -127,6 +177,8 @@ namespace GetLocked
             // Select the tab to show
             tabControl.SelectTab(1);
             textPwd.Focus();
+
+            watchingHandle = handle;
 
             RECT rect = new RECT
             {
@@ -200,7 +252,7 @@ namespace GetLocked
             }
         }
 
-        private void hideToNotifyIcon()
+        private void hideToNotifyIcon_switchToWatchingWindow(IntPtr hWnd)
         {
             this.Hide();
             this.ShowInTaskbar = false;
@@ -208,6 +260,10 @@ namespace GetLocked
             IsPalmed = true;
             textPwd.Text = "";
             textPwd.Focus();
+            if (hWnd != IntPtr.Zero)
+            {
+                SwitchToThisWindow(hWnd, true);
+            }
         }
 
         private void FormAMB_Shown(object sender, EventArgs e)
@@ -224,18 +280,19 @@ namespace GetLocked
 
         private void FormAMB_Deactivate(object sender, EventArgs e)
         {
-            this.TopMost = false;
-            IsPalmed = false;
+            //this.TopMost = false;
+            //IsPalmed = false;
         }
 
         private void FormAMB_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            hideToNotifyIcon();
+            hideToNotifyIcon_switchToWatchingWindow(watchingHandle);
         }
 
         private void FormAMB_Resize(object sender, EventArgs e)
         {
+            /*
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.Hide();
@@ -243,6 +300,7 @@ namespace GetLocked
                 this.notifyIcon.Visible = true;
                 IsPalmed = false;
             }
+            */
         }
 
         private void notifyIcon_DoubleClick(object sender, EventArgs e)
@@ -268,49 +326,7 @@ namespace GetLocked
             {
                 changeWatchingTitle(watching);
             }
-            backgroundWorker.RunWorkerAsync();
-        }
-
-        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            BackgroundWorker bgWorker = sender as BackgroundWorker;
-            while (true)
-            {
-                Process[] myProcesses = Process.GetProcesses();
-                IntPtr id = GetForegroundWindow();
-                foreach (Process myProcess in myProcesses)
-                {
-                    if (myProcess.MainWindowTitle.Length > 0)
-                    {
-                        if (myProcess.MainWindowHandle == id)
-                        {
-                            if (myProcess.MainWindowTitle == watchingTitle)
-                            {
-                                //Todo: MainWindowTitle named "watchingTile" focused.
-                                if (!IsPalmed) // if it's not palmed, then report it
-                                {
-                                    ProcChkBk pcb = new ProcChkBk();
-                                    pcb.Id = myProcess.MainWindowHandle;
-                                    pcb.Msg = watchingTitle + " focused.(" + DateTime.Now.ToString() + ")";
-                                    bgWorker.ReportProgress(0, pcb);
-                                }
-                            }
-                            else
-                            {
-                                IsPalmed = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
-        {
-            ProcChkBk pcb = e.UserState as ProcChkBk;
-            listBoxShowing.Items.Add(pcb.Msg);
-            showMeOverU(pcb.Id);
-            this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+            //backgroundWorker.RunWorkerAsync();
         }
 
         private void textPwd_KeyUp(object sender, KeyEventArgs e)
@@ -324,7 +340,7 @@ namespace GetLocked
                     MessageBox.Show("It seems that it's your first time entering the password," +
                         " please remember it, a 4 digits. You need to enter the same one the next time.");
                     setConfigValue("password", MD5Hash(tb.Text));
-                    hideToNotifyIcon();
+                    hideToNotifyIcon_switchToWatchingWindow(watchingHandle);
                 } 
                 else
                 {
@@ -336,7 +352,7 @@ namespace GetLocked
                     }
                     else
                     {
-                        hideToNotifyIcon();
+                        hideToNotifyIcon_switchToWatchingWindow(watchingHandle);
                     }
                 }
             }
@@ -365,11 +381,5 @@ namespace GetLocked
         {
             textPwd.Focus();
         }
-    }
-
-    class ProcChkBk
-    {
-        public IntPtr Id;
-        public String Msg;
     }
 }
