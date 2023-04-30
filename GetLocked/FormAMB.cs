@@ -8,6 +8,7 @@ using System.Linq;
 using System.CodeDom;
 using System.Security.Cryptography;
 using System.Text;
+using System.Drawing;
 
 namespace GetLocked
 {
@@ -45,6 +46,9 @@ namespace GetLocked
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
+        [DllImport("user32.dll", EntryPoint = "GetDesktopWindow", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr GetDesktopWindow();
+
         private string GetWindowTitle(IntPtr hWnd)
         {
             const int nChars = 256;
@@ -67,12 +71,12 @@ namespace GetLocked
             if (eventType == EVENT_SYSTEM_FOREGROUND)
             {
                 Console.WriteLine("And <" + watchingTitle + "/" + watchingHandle.ToString() + ">'s " + (IsPalmed ? "" : "not ") + "palmed.");
-                Console.WriteLine("And it's " + (isItVisible(watchingHandle) ? "visible" : "invisible") + ".");
+                Console.WriteLine("And it's " + (isOverCovered(watchingHandle) ? "covered" : "not covered") + ".");
                 if (title == watchingTitle)
                 {
                     //MessageBox.Show(title);
                     Console.WriteLine(title + ", gotcha.");
-                    if (!IsPalmed && isItVisible(watchingHandle))
+                    if (!IsPalmed && !isOverCovered(watchingHandle))
                     {
                         showMeOverU(hwnd);
                         this.Text = mainFormTitle + "->[" + watchingTitle + "]";
@@ -82,7 +86,7 @@ namespace GetLocked
                 {
                     Console.WriteLine("Now, it's not the watching one on top, it's <" + title + ">.");
                     
-                    if (!isItVisible(watchingHandle))
+                    if (isOverCovered(watchingHandle))
                     {
                         Console.WriteLine("***Now this <" + watchingTitle + "> window is invisible.***");
                         //IsPalmed = false;
@@ -110,7 +114,7 @@ namespace GetLocked
         private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("user32.dll")]
-        public static extern bool IsWindowVisible(IntPtr hWnd);
+        public static extern IntPtr GetWindow(IntPtr hWnd, uint wWcmd);
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern UInt32 GetWindowLong(IntPtr hWnd, int nIndex);
@@ -164,6 +168,53 @@ namespace GetLocked
             UInt32 style = GetWindowLong(hWnd, GWL_STYLE);
             bool visible = ((style & WS_VISIBLE) != WS_VISIBLE);
             return visible;
+        }
+
+        bool isOverCovered(IntPtr hWnd) {
+            RECT rect = new RECT();
+            IntPtr desktop = GetDesktopWindow();
+            IntPtr win = GetWindow(desktop, 5);
+            Console.WriteLine("******************loop starts*******************");
+            while (win != IntPtr.Zero)
+            {
+                if (GetWindowRect(win, ref rect))
+                {
+                    Rectangle winrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+                    if (winrect == Rectangle.Empty)
+                    {
+                        Console.WriteLine("No window of this app [" + GetWindowTitle(win) + "]");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Current app [{GetWindowTitle(win)}]'s rectangle: {winrect.ToString()}");
+                        GetWindowRect(watchingHandle, ref rect);
+                        Rectangle watchingrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+                        if (watchingrect.IntersectsWith(winrect))
+                        {
+                            Console.WriteLine($"{this.watchingTitle} and {GetWindowTitle(win)} are  crossing to each other.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("----------------------------");
+                        }
+                    }
+                }
+                win = GetWindow(win, 2);
+            }
+            Console.WriteLine("******************loop ends*******************");
+
+            if (GetWindowRect(hWnd, ref rect))
+            {
+                Rectangle winrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+                if (winrect == Rectangle.Empty)
+                {
+                    Console.WriteLine("Can't get the rectangle of the window.");
+                    return false;
+                }
+                Console.WriteLine($"Current Main Rectangle: {winrect.ToString()}");
+            }
+
+            return false;
         }
 
         void changeWatchingTitle(String w)
