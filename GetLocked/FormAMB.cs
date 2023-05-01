@@ -1,14 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Linq;
-using System.CodeDom;
 using System.Security.Cryptography;
 using System.Text;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace GetLocked
 {
@@ -45,9 +44,6 @@ namespace GetLocked
 
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
-
-        [DllImport("user32.dll", EntryPoint = "GetDesktopWindow", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr GetDesktopWindow();
 
         private string GetWindowTitle(IntPtr hWnd)
         {
@@ -109,7 +105,58 @@ namespace GetLocked
             public int Bottom;
         }
 
-        [DllImport("user32.dll")]
+        [StructLayout(LayoutKind.Sequential)]
+        public readonly struct LPRECT
+        {
+            public readonly int Left;
+            public readonly int Top;
+            public readonly int Right;
+            public readonly int Bottom;
+        }
+
+        public readonly struct WindowInfo
+        {
+            public WindowInfo(IntPtr hWnd, string className, string title, bool isVisible, Rectangle bounds) : this()
+            {
+                Hwnd = hWnd;
+                ClassName = className;
+                Title = title;
+                IsVisible = isVisible;
+                Bounds = bounds;
+            }
+
+            /// <summary>
+            /// 获取窗口句柄。
+            /// </summary>
+            public IntPtr Hwnd { get; }
+
+            /// <summary>
+            /// 获取窗口类名。
+            /// </summary>
+            public string ClassName { get; }
+
+            /// <summary>
+            /// 获取窗口标题。
+            /// </summary>
+            public string Title { get; }
+
+            /// <summary>
+            /// 获取当前窗口是否可见。
+            /// </summary>
+            public bool IsVisible { get; }
+
+            /// <summary>
+            /// 获取窗口当前的位置和尺寸。
+            /// </summary>
+            public Rectangle Bounds { get; }
+
+            /// <summary>
+            /// 获取窗口当前是否是最小化的。
+            /// </summary>
+            public bool IsMinimized => Bounds.Left == -32000 && Bounds.Top == -32000;
+        }
+
+            [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
@@ -125,8 +172,65 @@ namespace GetLocked
         [DllImport("user32.dll", EntryPoint = "GetForegroundWindow")]
         public static extern IntPtr GetForegroundWindow();
 
+        [DllImport("user32")]
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32")]
+        public static extern bool IsWindowVisible(IntPtr hWnd);
+
+        private static List<WindowInfo> GetAllWindowsAbove(IntPtr hWnd)
+        {
+            var windowInfos = new List<WindowInfo>();
+            var win = GetWindow(hWnd, 3); //GW_HWNDPREV = 3
+            if (win == IntPtr.Zero)
+            {
+                return windowInfos;
+            }
+            var winDetails = GetWindowDetail(win);
+            windowInfos.AddRange(GetAllWindowsAbove(win));
+            windowInfos.Add(winDetails);
+            return windowInfos;
+        }
+
+        private static WindowInfo GetWindowDetail(IntPtr hWnd)
+        {
+            // 获取窗口类名。
+            var lpString = new StringBuilder(512);
+            GetClassName(hWnd, lpString, lpString.Capacity);
+            var className = lpString.ToString();
+
+            // 获取窗口标题。
+            var lptrString = new StringBuilder(512);
+            GetWindowText(hWnd, lptrString, lptrString.Capacity);
+            var title = lptrString.ToString().Trim();
+
+            // 获取窗口可见性。
+            var isVisible = IsWindowVisible(hWnd);
+
+            // 获取窗口位置和尺寸。
+            RECT rect = new RECT();
+            GetWindowRect(hWnd, ref rect);
+            var bounds = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+
+            return new WindowInfo(hWnd, className, title, isVisible, bounds);
+        }
         private void BtnClickMe_Click(object sender, EventArgs e)
         {
+            /**
+             * a text block here, temply
+             */
+            var windows = GetAllWindowsAbove(watchingHandle);
+            var windowInfos = windows.Where(I => I.IsVisible && !I.IsMinimized && I.Title != ""
+                /*&& I.Hwnd != watchingHandle*/).ToList();
+            Console.WriteLine($"Start listing window above>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>watchingHandle:{watchingHandle},watchingTitle:{watchingTitle}");
+            foreach (var windowInfo in windowInfos)
+            {
+                
+                Console.WriteLine($"Hwnd:{windowInfo.Hwnd},Title:{windowInfo.Title},IsMinimized:{windowInfo.IsMinimized},IsVisible:{windowInfo.IsVisible},ClassName:{windowInfo.ClassName},Bounds:{windowInfo.Bounds}\r\n");
+                
+            }
+            Console.WriteLine("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<End.");
+
             listBoxShowing.Items.Clear();
             Process[] myProcesses = Process.GetProcesses();
             int cnt = 0;
@@ -171,48 +275,42 @@ namespace GetLocked
         }
 
         bool isOverCovered(IntPtr hWnd) {
+            return false;
             RECT rect = new RECT();
-            IntPtr desktop = GetDesktopWindow();
-            IntPtr win = GetWindow(desktop, 5);
+            Process[] myProcesses = Process.GetProcesses();
             Console.WriteLine("******************loop starts*******************");
-            while (win != IntPtr.Zero)
+            foreach (Process myProcess in myProcesses)
             {
-                if (GetWindowRect(win, ref rect))
+                if (myProcess.MainWindowTitle.Length > 0 && myProcess.MainWindowHandle != watchingHandle)
                 {
-                    Rectangle winrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-                    if (winrect == Rectangle.Empty)
+                    if (GetWindowRect(myProcess.MainWindowHandle, ref rect))
                     {
-                        Console.WriteLine("No window of this app [" + GetWindowTitle(win) + "]");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Current app [{GetWindowTitle(win)}]'s rectangle: {winrect.ToString()}");
-                        GetWindowRect(watchingHandle, ref rect);
-                        Rectangle watchingrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-                        if (watchingrect.IntersectsWith(winrect))
+                        String title = GetWindowTitle(myProcess.MainWindowHandle);
+                        Rectangle winrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+                        if (winrect == Rectangle.Empty)
                         {
-                            Console.WriteLine($"{this.watchingTitle} and {GetWindowTitle(win)} are  crossing to each other.");
+                            Console.WriteLine("No window of this app [" + title + "]");
                         }
                         else
                         {
-                            Console.WriteLine("----------------------------");
+                            
+
+                            Console.WriteLine($"Current app [{title}]'s rectangle: {winrect.ToString()}");
+                            GetWindowRect(watchingHandle, ref rect);
+                            Rectangle watchingrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+                            if (watchingrect.IntersectsWith(winrect))
+                            {
+                                Console.WriteLine($"{this.watchingTitle} and {title} are  crossing to each other.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("----------------------------");
+                            }
                         }
                     }
                 }
-                win = GetWindow(win, 2);
             }
             Console.WriteLine("******************loop ends*******************");
-
-            if (GetWindowRect(hWnd, ref rect))
-            {
-                Rectangle winrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-                if (winrect == Rectangle.Empty)
-                {
-                    Console.WriteLine("Can't get the rectangle of the window.");
-                    return false;
-                }
-                Console.WriteLine($"Current Main Rectangle: {winrect.ToString()}");
-            }
 
             return false;
         }
