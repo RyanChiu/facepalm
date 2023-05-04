@@ -18,6 +18,8 @@ namespace GetLocked
         public FormAMB()
         {
             InitializeComponent();
+            this.Tag = 0;
+
             Control.CheckForIllegalCrossThreadCalls = false;
             this.listBoxShowing.MouseDoubleClick += new MouseEventHandler(listBoxShowing_MouseDoubleClick);
 
@@ -61,12 +63,12 @@ namespace GetLocked
         public void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, 
             int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            // Write every "activated window"'s title on the console line.
+            // Write every "activated window"'s title into the console.
             String title = GetWindowTitle(hwnd);
-            Console.WriteLine(title + ", and the 'eventType is valued: " + eventType.ToString());
-            if (eventType == EVENT_SYSTEM_FOREGROUND)
+            Console.WriteLine($"hWnd:{hwnd}, title:{title}, eventType:{eventType.ToString()}");
+            if (eventType == EVENT_SYSTEM_FOREGROUND && title != null)
             {
-                Console.WriteLine("And <" + watchingTitle + "/" + watchingHandle.ToString() + ">'s " + (IsPalmed ? "" : "not ") + "palmed.");
+                Console.WriteLine($"And <{watchingTitle}/{watchingHandle.ToString()}>'s " + (IsPalmed ? "" : "not ") + "palmed.");
                 Console.WriteLine("And it's " + (isOverCovered(watchingHandle) ? "covered" : "not covered") + ".");
                 if (title == watchingTitle)
                 {
@@ -86,6 +88,11 @@ namespace GetLocked
                     {
                         Console.WriteLine("***Now this <" + watchingTitle + "> window is invisible.***");
                         //IsPalmed = false;
+                        int i = (int)this.Tag;
+                        i++;
+                        this.Tag = i;
+                        notifyIcon.ShowBalloonTip(500, $"Count ({this.Tag.ToString()})",
+                            $"hWnd:{hwnd}, title:{title}, eventType:{eventType.ToString()}", ToolTipIcon.Info);
                     }
                 }
             }
@@ -194,20 +201,20 @@ namespace GetLocked
 
         private static WindowInfo GetWindowDetail(IntPtr hWnd)
         {
-            // 获取窗口类名。
+            // get classname of the window
             var lpString = new StringBuilder(512);
             GetClassName(hWnd, lpString, lpString.Capacity);
             var className = lpString.ToString();
 
-            // 获取窗口标题。
+            // get title of the window
             var lptrString = new StringBuilder(512);
             GetWindowText(hWnd, lptrString, lptrString.Capacity);
             var title = lptrString.ToString().Trim();
 
-            // 获取窗口可见性。
+            // get visibility of the window
             var isVisible = IsWindowVisible(hWnd);
 
-            // 获取窗口位置和尺寸。
+            // get size of the window
             RECT rect = new RECT();
             GetWindowRect(hWnd, ref rect);
             var bounds = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
@@ -219,17 +226,23 @@ namespace GetLocked
             /**
              * a text block here, temply
              */
+            RECT rect = new RECT();
+            GetWindowRect(watchingHandle, ref rect);
+            Rectangle watchingRect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
             var windows = GetAllWindowsAbove(watchingHandle);
             var windowInfos = windows.Where(I => I.IsVisible && !I.IsMinimized && I.Title != ""
-                /*&& I.Hwnd != watchingHandle*/).ToList();
-            Console.WriteLine($"Start listing window above>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>watchingHandle:{watchingHandle},watchingTitle:{watchingTitle}");
+                && I.Hwnd != watchingHandle).ToList();
+            Console.WriteLine($"\r\nStart listing window(s) above>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" +
+                $"watchingHandle:{watchingHandle},watchingTitle:{watchingTitle},watchingRect:{watchingRect.ToString()}");
             foreach (var windowInfo in windowInfos)
             {
                 
-                Console.WriteLine($"Hwnd:{windowInfo.Hwnd},Title:{windowInfo.Title},IsMinimized:{windowInfo.IsMinimized},IsVisible:{windowInfo.IsVisible},ClassName:{windowInfo.ClassName},Bounds:{windowInfo.Bounds}\r\n");
+                Console.WriteLine($"Hwnd:{windowInfo.Hwnd},Title:{windowInfo.Title},IsMinimized:{windowInfo.IsMinimized}," +
+                    $"IsVisible:{windowInfo.IsVisible},ClassName:{windowInfo.ClassName},Bounds:{windowInfo.Bounds}\r\n" +
+                    $"IsCrossed:{watchingRect.IntersectsWith(windowInfo.Bounds)}");
                 
             }
-            Console.WriteLine("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<End.");
+            Console.WriteLine($"{windowInfos.Count}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<end(s) up there.");
 
             listBoxShowing.Items.Clear();
             Process[] myProcesses = Process.GetProcesses();
@@ -275,42 +288,31 @@ namespace GetLocked
         }
 
         bool isOverCovered(IntPtr hWnd) {
-            return false;
-            RECT rect = new RECT();
-            Process[] myProcesses = Process.GetProcesses();
-            Console.WriteLine("******************loop starts*******************");
-            foreach (Process myProcess in myProcesses)
+            if (hWnd == IntPtr.Zero) return false;
+            String title = GetWindowTitle(hWnd);
+            RECT r = new RECT();
+            GetWindowRect(hWnd, ref r);
+            Rectangle rect = new Rectangle(r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top);
+            var windows = GetAllWindowsAbove(hWnd);
+            var windowInfos = windows.Where(I => I.IsVisible && !I.IsMinimized && I.Title != ""
+                && I.Bounds.Width > 1 && I.Bounds.Height > 1
+                && I.Hwnd != hWnd).ToList();
+            Console.WriteLine($"\r\nStart rolling window(s) above the watching one>>>>>>>>>>>>>>>>>>" +
+                $"handle:{hWnd}, title:{title}, rect:{rect.ToString()}");
+            foreach (var windowInfo in windowInfos)
             {
-                if (myProcess.MainWindowTitle.Length > 0 && myProcess.MainWindowHandle != watchingHandle)
-                {
-                    if (GetWindowRect(myProcess.MainWindowHandle, ref rect))
-                    {
-                        String title = GetWindowTitle(myProcess.MainWindowHandle);
-                        Rectangle winrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-                        if (winrect == Rectangle.Empty)
-                        {
-                            Console.WriteLine("No window of this app [" + title + "]");
-                        }
-                        else
-                        {
-                            
 
-                            Console.WriteLine($"Current app [{title}]'s rectangle: {winrect.ToString()}");
-                            GetWindowRect(watchingHandle, ref rect);
-                            Rectangle watchingrect = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-                            if (watchingrect.IntersectsWith(winrect))
-                            {
-                                Console.WriteLine($"{this.watchingTitle} and {title} are  crossing to each other.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("----------------------------");
-                            }
-                        }
-                    }
+                Console.WriteLine($"Hwnd:{windowInfo.Hwnd},Title:{windowInfo.Title},IsMinimized:{windowInfo.IsMinimized}," +
+                    $"IsVisible:{windowInfo.IsVisible},ClassName:{windowInfo.ClassName},Bounds:{windowInfo.Bounds}\r\n" +
+                    $"IsCrossed:{rect.IntersectsWith(windowInfo.Bounds)}");
+
+                if (rect.IntersectsWith(windowInfo.Bounds))
+                {
+                    Console.WriteLine($"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ends up with crossing found.\r\n");
+                    return true;
                 }
             }
-            Console.WriteLine("******************loop ends*******************");
+            Console.WriteLine($"{windowInfos.Count}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<just end(s) up there.\r\n");
 
             return false;
         }
@@ -401,7 +403,7 @@ namespace GetLocked
             }
         }
 
-        private void hideToNotifyIcon_switchToWatchingWindow(IntPtr hWnd)
+        private void hideToNotifyIcon()
         {
             this.Hide();
             this.ShowInTaskbar = false;
@@ -409,10 +411,6 @@ namespace GetLocked
             IsPalmed = true;
             textPwd.Text = "";
             textPwd.Focus();
-            if (hWnd != IntPtr.Zero)
-            {
-                SwitchToThisWindow(hWnd, true);
-            }
         }
 
         private void FormAMB_Shown(object sender, EventArgs e)
@@ -436,7 +434,7 @@ namespace GetLocked
         private void FormAMB_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            hideToNotifyIcon_switchToWatchingWindow(watchingHandle);
+            hideToNotifyIcon();
         }
 
         private void FormAMB_Resize(object sender, EventArgs e)
@@ -489,7 +487,7 @@ namespace GetLocked
                     MessageBox.Show("It seems that it's your first time entering the password," +
                         " please remember it, a 4 digits. You need to enter the same one the next time.");
                     setConfigValue("password", MD5Hash(tb.Text));
-                    hideToNotifyIcon_switchToWatchingWindow(watchingHandle);
+                    hideToNotifyIcon();
                 } 
                 else
                 {
@@ -501,7 +499,7 @@ namespace GetLocked
                     }
                     else
                     {
-                        hideToNotifyIcon_switchToWatchingWindow(watchingHandle);
+                        hideToNotifyIcon();
                     }
                 }
             }
