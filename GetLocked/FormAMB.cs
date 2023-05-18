@@ -78,7 +78,15 @@ namespace GetLocked
                     {
                         showMeOverU(hwnd);
                         this.Text = mainFormTitle + "->[" + watchingTitle + "]";
+
                     }
+
+                    //DEBUG: the following lines are for debug
+                    int i = (int)this.Tag;
+                    i++;
+                    this.Tag = i;
+                    notifyIcon.ShowBalloonTip(300, $"S H O U L D P A L M I T. - Count ({this.Tag.ToString()})",
+                        $"Should execute 'palming' here!", ToolTipIcon.Warning);
                 }
                 else
                 {
@@ -88,11 +96,14 @@ namespace GetLocked
                     {
                         Console.WriteLine("***Now this <" + watchingTitle + "> window is invisible.***");
                         //IsPalmed = false;
+                        
+                        //DEBUG: the following lines are for debug
                         int i = (int)this.Tag;
                         i++;
                         this.Tag = i;
-                        notifyIcon.ShowBalloonTip(500, $"Count ({this.Tag.ToString()})",
+                        notifyIcon.ShowBalloonTip(300, $"Count ({this.Tag.ToString()})",
                             $"hWnd:{hwnd}, title:{title}, eventType:{eventType.ToString()}", ToolTipIcon.Info);
+                        
                     }
                 }
             }
